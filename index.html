@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f1729" />
+  <title>实时地球 · LiveEarth</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <!-- 顶部操作栏 -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">🌍</span>
+      <span class="title">实时地球</span>
+      <span class="sub">LiveEarth</span>
+    </div>
+    <div class="actions">
+      <button id="btn-search" class="icon-btn" title="搜索城市">🔍</button>
+      <button id="btn-locate" class="icon-btn" title="定位我的位置">📍</button>
+      <button id="btn-share" class="icon-btn" title="分享当前视图">🔗</button>
+      <button id="btn-refresh" class="icon-btn" title="刷新实时数据">⟳</button>
+    </div>
+  </header>
+
+  <!-- 城市搜索面板 -->
+  <div id="search-panel" class="search-panel hidden">
+    <div class="search-box">
+      <span class="search-ico">🔍</span>
+      <input id="search-input" type="search" placeholder="搜索城市，如 北京 / Tokyo / 上海" autocomplete="off" />
+      <button id="search-close" class="search-close" title="关闭">✕</button>
+    </div>
+    <div id="search-results" class="search-results"></div>
+  </div>
+
+  <!-- 地图 -->
+  <div id="map"></div>
+
+  <!-- 图例 -->
+  <div id="legend" class="legend hidden"></div>
+
+  <!-- 底部图层面板 -->
+  <section id="sheet" class="sheet">
+    <div class="sheet-handle" id="sheet-handle">
+      <div class="grip"></div>
+      <span class="sheet-title">图层与实时数据</span>
+      <span id="updated" class="updated">未更新</span>
+    </div>
+    <div class="sheet-body">
+      <div class="group">
+        <h3>底图</h3>
+        <div id="base-list" class="chip-row"></div>
+      </div>
+      <div class="group">
+        <h3>实时图层</h3>
+        <div id="overlay-list" class="switch-list"></div>
+      </div>
+      <div class="group">
+        <h3>我的收藏 · 轨迹</h3>
+        <button id="btn-add-fav" class="add-fav">＋ 收藏当前中心</button>
+        <div id="fav-list" class="fav-list"></div>
+        <label class="switch-line">
+          <span>显示轨迹连线</span>
+          <input type="checkbox" id="track-toggle" />
+          <span class="track"></span>
+        </label>
+        <p class="hint" style="margin-top:8px">提示：也可在地图上「长按」直接收藏该点。收藏会保存在本机浏览器。</p>
+      </div>
+      <div class="group auto">
+        <label class="switch-line">
+          <span>自动刷新（每 5 分钟）</span>
+          <input type="checkbox" id="auto-refresh" />
+          <span class="track"></span>
+        </label>
+      </div>
+      <p class="hint">数据来自 RainViewer · USGS · Open-Meteo · NASA GIBS，均为免费公开接口，实时性取决于各数据源发布频率。</p>
+    </div>
+  </section>
+
+  <!-- 提示条 -->
+  <div id="toast" class="toast"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>

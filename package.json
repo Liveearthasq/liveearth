@@ -1,0 +1,11 @@
+{
+  "name": "liveearth",
+  "version": "1.0.0",
+  "description": "实时地球 · LiveEarth — 移动端 H5 实时地图，免费公开 API（雷达/地震/空气质量/NASA 影像）",
+  "private": true,
+  "scripts": {
+    "start": "npx --yes serve -l 8080 .",
+    "deploy": "vercel --prod",
+    "deploy:token": "vercel deploy --prod --token=$VERCEL_TOKEN"
+  }
+}
