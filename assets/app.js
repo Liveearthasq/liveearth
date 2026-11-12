@@ -134,6 +134,73 @@
     { name: '珀斯', en: 'Perth', lat: -31.9505, lng: 115.8605 }
   ];
 
+  // ---------- 地图常驻城市标注（中国中等城市 + 外国大城市）----------
+  var LABEL_CITIES = [
+    // 中国中等城市
+    { name: '苏州', lat: 31.30, lng: 120.62, country: 'cn' },
+    { name: '无锡', lat: 31.49, lng: 120.31, country: 'cn' },
+    { name: '宁波', lat: 29.87, lng: 121.55, country: 'cn' },
+    { name: '青岛', lat: 36.07, lng: 120.38, country: 'cn' },
+    { name: '大连', lat: 38.91, lng: 121.61, country: 'cn' },
+    { name: '厦门', lat: 24.48, lng: 118.09, country: 'cn' },
+    { name: '常州', lat: 31.81, lng: 119.97, country: 'cn' },
+    { name: '温州', lat: 27.99, lng: 120.70, country: 'cn' },
+    { name: '佛山', lat: 23.02, lng: 113.12, country: 'cn' },
+    { name: '东莞', lat: 23.02, lng: 113.75, country: 'cn' },
+    { name: '烟台', lat: 37.46, lng: 121.45, country: 'cn' },
+    { name: '泉州', lat: 24.87, lng: 118.58, country: 'cn' },
+    { name: '嘉兴', lat: 30.75, lng: 120.75, country: 'cn' },
+    { name: '南通', lat: 31.98, lng: 120.89, country: 'cn' },
+    { name: '徐州', lat: 34.27, lng: 117.18, country: 'cn' },
+    { name: '唐山', lat: 39.63, lng: 118.18, country: 'cn' },
+    { name: '绍兴', lat: 30.00, lng: 120.58, country: 'cn' },
+    { name: '合肥', lat: 31.82, lng: 117.23, country: 'cn' },
+    { name: '昆明', lat: 25.04, lng: 102.71, country: 'cn' },
+    { name: '南昌', lat: 28.68, lng: 115.86, country: 'cn' },
+    { name: '贵阳', lat: 26.65, lng: 106.63, country: 'cn' },
+    { name: '南宁', lat: 22.82, lng: 108.32, country: 'cn' },
+    { name: '兰州', lat: 36.06, lng: 103.83, country: 'cn' },
+    { name: '太原', lat: 37.87, lng: 112.55, country: 'cn' },
+    { name: '石家庄', lat: 38.04, lng: 114.51, country: 'cn' },
+    { name: '福州', lat: 26.07, lng: 119.30, country: 'cn' },
+    { name: '哈尔滨', lat: 45.80, lng: 126.53, country: 'cn' },
+    { name: '长春', lat: 43.82, lng: 125.32, country: 'cn' },
+    { name: '沈阳', lat: 41.81, lng: 123.43, country: 'cn' },
+    { name: '济南', lat: 36.65, lng: 117.12, country: 'cn' },
+    { name: '郑州', lat: 34.75, lng: 113.62, country: 'cn' },
+    { name: '长沙', lat: 28.23, lng: 112.94, country: 'cn' },
+    { name: '武汉', lat: 30.59, lng: 114.31, country: 'cn' },
+    { name: '成都', lat: 30.57, lng: 104.07, country: 'cn' },
+    { name: '西安', lat: 34.34, lng: 108.94, country: 'cn' },
+    // 外国大城市
+    { name: '东京', lat: 35.68, lng: 139.69, country: 'intl' },
+    { name: '大阪', lat: 34.69, lng: 135.50, country: 'intl' },
+    { name: '首尔', lat: 37.57, lng: 126.98, country: 'intl' },
+    { name: '曼谷', lat: 13.76, lng: 100.50, country: 'intl' },
+    { name: '新加坡', lat: 1.35, lng: 103.82, country: 'intl' },
+    { name: '吉隆坡', lat: 3.14, lng: 101.69, country: 'intl' },
+    { name: '雅加达', lat: -6.21, lng: 106.85, country: 'intl' },
+    { name: '新德里', lat: 28.61, lng: 77.21, country: 'intl' },
+    { name: '孟买', lat: 19.08, lng: 72.88, country: 'intl' },
+    { name: '迪拜', lat: 25.20, lng: 55.27, country: 'intl' },
+    { name: '伊斯坦布尔', lat: 41.01, lng: 28.98, country: 'intl' },
+    { name: '莫斯科', lat: 55.75, lng: 37.62, country: 'intl' },
+    { name: '伦敦', lat: 51.51, lng: -0.13, country: 'intl' },
+    { name: '巴黎', lat: 48.85, lng: 2.35, country: 'intl' },
+    { name: '柏林', lat: 52.52, lng: 13.40, country: 'intl' },
+    { name: '马德里', lat: 40.42, lng: -3.70, country: 'intl' },
+    { name: '罗马', lat: 41.90, lng: 12.50, country: 'intl' },
+    { name: '纽约', lat: 40.71, lng: -74.01, country: 'intl' },
+    { name: '洛杉矶', lat: 34.05, lng: -118.24, country: 'intl' },
+    { name: '芝加哥', lat: 41.88, lng: -87.63, country: 'intl' },
+    { name: '多伦多', lat: 43.65, lng: -79.38, country: 'intl' },
+    { name: '墨西哥城', lat: 19.43, lng: -99.13, country: 'intl' },
+    { name: '圣保罗', lat: -23.55, lng: -46.63, country: 'intl' },
+    { name: '开普敦', lat: -33.92, lng: 18.42, country: 'intl' },
+    { name: '悉尼', lat: -33.87, lng: 151.21, country: 'intl' }
+  ];
+  var labelMarkers = [];
+
   // ---------- 状态 ----------
   var map, baseLayer, currentBase = 'dark';
   var overlays = {
@@ -141,7 +208,8 @@
     satellite: { name: '卫星云图',     sub: 'NASA Aqua 真彩（含云）',  layer: null, load: loadSatellite, on: false },
     quakes:    { name: '实时地震',     sub: 'USGS 近 24 小时',          layer: null, load: loadQuakes, on: false },
     aqi:       { name: '空气质量',     sub: 'Open-Meteo AQI',           layer: null, load: loadAQI, on: false },
-    nasa:      { name: 'NASA 真彩影像', sub: 'GIBS MODIS 每日真彩',      layer: null, load: loadNASA, on: false }
+    nasa:      { name: 'NASA 真彩影像', sub: 'GIBS MODIS 每日真彩',      layer: null, load: loadNASA, on: false },
+    labels:    { name: '城市名称标注',   sub: '中国中等城市 / 外国大城市',  layer: null, load: loadLabels, on: false }
   };
   var autoTimer = null;
   var myMarker = null;
@@ -300,6 +368,36 @@
     return gibsLayer('MODIS_Terra_CorrectedReflectance_TrueColor', 1);
   }
 
+  // ---------- 城市名称标注 ----------
+  function buildLabelLayer() {
+    var grp = L.layerGroup();
+    labelMarkers = [];
+    LABEL_CITIES.forEach(function (c) {
+      var icon = L.divIcon({
+        className: 'city-label ' + (c.country === 'cn' ? 'cn' : 'intl'),
+        html: '<span>' + c.name + '</span>',
+        iconSize: [0, 0],
+        iconAnchor: [0, 0]
+      });
+      var m = L.marker([c.lat, c.lng], { icon: icon, interactive: false, keyboard: false });
+      m.addTo(grp);
+      labelMarkers.push(m);
+    });
+    return grp;
+  }
+  function loadLabels() {
+    return Promise.resolve(buildLabelLayer());
+  }
+  function updateLabelVisibility() {
+    if (!overlays.labels.on) return;
+    var z = map.getZoom();
+    var show = z >= 3; // 缩到最小（看全球）时隐藏，避免标签过度重叠
+    labelMarkers.forEach(function (m) {
+      var el = m.getElement ? m.getElement() : null;
+      if (el) el.style.display = show ? '' : 'none';
+    });
+  }
+
   // ---------- 图层开关 ----------
   function toggleOverlay(key, on) {
     var o = overlays[key];
@@ -310,6 +408,7 @@
         o.layer = layer;
         if (o.layer.setZIndex) o.layer.setZIndex(500);
         o.layer.addTo(map);
+        if (key === 'labels') updateLabelVisibility();
         setUpdated();
         updateLegend();
       }).catch(function (e) {
@@ -632,7 +731,9 @@
     map = L.map('map', { zoomControl: false, worldCopyJump: true, attributionControl: true })
       .setView([20, 110], 3);
     L.control.zoom({ position: 'bottomright' }).addTo(map);
+    L.control.scale({ position: 'bottomright', metric: true, imperial: false, maxWidth: 120 }).addTo(map);
     map.attributionControl.setPrefix(false);
+    map.on('zoomend', updateLabelVisibility);
     switchBase(currentBase);
     map.on('locationfound', onLocated);
     map.on('locationerror', function () { toast('定位失败，请检查浏览器权限'); });
