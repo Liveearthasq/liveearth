@@ -221,6 +221,7 @@
     quakes:    { name: '实时地震',     sub: 'USGS 近 24 小时',          layer: null, load: loadQuakes, on: false },
     aqi:       { name: '空气质量',     sub: 'Open-Meteo AQI',           layer: null, load: loadAQI, on: false },
     nasa:      { name: 'NASA 真彩影像', sub: 'GIBS MODIS 每日真彩',      layer: null, load: loadNASA, on: false },
+    admin:     { name: '中国行政边界',   sub: '省级行政区划（DataV）',      layer: null, load: loadAdmin, on: false },
     labels:    { name: '城市名称标注',   sub: '中国中等以上城市 / 外国大城市',  layer: null, load: loadLabels, on: false }
   };
   var autoTimer = null;
@@ -412,6 +413,21 @@
     });
   }
 
+  // ---------- 中国行政边界（DataV 省级 GeoJSON）----------
+  function loadAdmin() {
+    return fetch('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json')
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (geo) {
+        var layer = L.geoJSON(geo, {
+          style: { color: '#7dd3fc', weight: 1, opacity: 0.85, fill: false },
+          interactive: false,
+          className: 'admin-bounds'
+        });
+        if (layer.setZIndex) layer.setZIndex(450);
+        return layer;
+      });
+  }
+
   // ---------- 图层开关 ----------
   function toggleOverlay(key, on) {
     var o = overlays[key];
@@ -584,23 +600,59 @@
     favLayer = L.layerGroup().addTo(map);
     drawFav();
     renderFavorites();
+    initLabelModal();
 
     document.getElementById('btn-add-fav').addEventListener('click', function () {
       var c = map.getCenter();
-      var def = '收藏点 ' + (favorites.length + 1);
-      var name = window.prompt('给这个收藏点起个名字：', def);
-      if (name === null) return;
-      addFavorite(c, (name.trim() || def));
+      var def = '标注 ' + (favorites.length + 1);
+      openLabelModal(def, function (name) {
+        addFavorite(c, name || def);
+      });
     });
     document.getElementById('track-toggle').addEventListener('change', function (e) {
       trackOn = e.target.checked; drawFav();
     });
-    // 长按地图收藏
+    // 长按地图收藏（并输入标签）
     map.on('contextmenu', function (e) {
-      addFavorite(e.latlng, '收藏点 ' + (favorites.length + 1));
-      toast('已收藏该点');
+      var def = '标注 ' + (favorites.length + 1);
+      openLabelModal(def, function (name) {
+        addFavorite(e.latlng, name || def);
+        toast('已收藏该点');
+      });
     });
   }
+
+  // ---------- 标签输入弹窗 ----------
+  var pendingLabelCb = null;
+  function initLabelModal() {
+    var modal = document.getElementById('label-modal');
+    var input = document.getElementById('label-input');
+    document.getElementById('label-ok').addEventListener('click', function () {
+      if (!pendingLabelCb) return;
+      var v = input.value.trim();
+      var cb = pendingLabelCb;
+      closeLabelModal();
+      cb(v);
+    });
+    document.getElementById('label-cancel').addEventListener('click', closeLabelModal);
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); document.getElementById('label-ok').click(); }
+      if (e.key === 'Escape') { closeLabelModal(); }
+    });
+    modal.addEventListener('click', function (e) { if (e.target === modal) closeLabelModal(); });
+  }
+  function openLabelModal(defaultName, onConfirm) {
+    pendingLabelCb = onConfirm;
+    var input = document.getElementById('label-input');
+    input.value = defaultName || '';
+    document.getElementById('label-modal').classList.remove('hidden');
+    setTimeout(function () { input.focus(); input.select(); }, 50);
+  }
+  function closeLabelModal() {
+    document.getElementById('label-modal').classList.add('hidden');
+    pendingLabelCb = null;
+  }
+
   function addFavorite(ll, name) {
     favorites.push({ id: Date.now() + '_' + Math.floor(Math.random() * 1000), name: name, lat: ll.lat, lng: ll.lng });
     saveFavorites(); renderFavorites(); drawFav();
@@ -610,13 +662,28 @@
     favorites = favorites.filter(function (f) { return f.id !== id; });
     saveFavorites(); renderFavorites(); drawFav();
   }
+  function renameFavorite(id) {
+    var f = favorites.filter(function (x) { return x.id === id; })[0];
+    if (!f) return;
+    openLabelModal(f.name, function (name) {
+      if (!name) return;
+      f.name = name;
+      saveFavorites(); renderFavorites(); drawFav();
+      toast('已重命名为：' + name);
+    });
+  }
   function drawFav() {
     if (!favLayer) return;
     favLayer.clearLayers();
     favorites.forEach(function (f) {
       var m = L.marker([f.lat, f.lng], { icon: favIcon });
       m.bindPopup('<div class="pop"><b>' + escapeHtml(f.name) + '</b><br>' +
-        f.lat.toFixed(3) + ', ' + f.lng.toFixed(3) + '</div>');
+        f.lat.toFixed(3) + ', ' + f.lng.toFixed(3) +
+        '<br><button class="pop-rename" data-id="' + f.id + '">重命名</button></div>');
+      m.on('popupopen', function (ev) {
+        var node = ev.popup.getElement().querySelector('.pop-rename');
+        if (node) node.addEventListener('click', function () { renameFavorite(f.id); });
+      });
       m.addTo(favLayer);
     });
     if (trackLine) { map.removeLayer(trackLine); trackLine = null; }
@@ -734,6 +801,36 @@
     document.getElementById('btn-refresh').addEventListener('click', refreshAll);
     document.getElementById('btn-locate').addEventListener('click', locateMe);
     document.getElementById('btn-share').addEventListener('click', shareView);
+
+    // 三维视角（CSS 透视倾斜）
+    var mapEl = document.getElementById('map');
+    var tiltDeg = 50;
+    function applyTilt(deg) {
+      mapEl.style.transition = 'transform .4s ease';
+      if (deg > 0) {
+        mapEl.style.transformOrigin = '50% 100%';
+        mapEl.style.transform = 'perspective(1200px) rotateX(' + deg + 'deg)';
+      } else {
+        mapEl.style.transform = 'none';
+      }
+    }
+    document.getElementById('btn-3d').addEventListener('click', function () {
+      var t = document.getElementById('view3d-toggle');
+      t.checked = !t.checked;
+      t.dispatchEvent(new Event('change'));
+    });
+    document.getElementById('view3d-toggle').addEventListener('change', function (e) {
+      var on = e.target.checked;
+      document.getElementById('tilt-wrap').classList.toggle('hidden', !on);
+      document.getElementById('btn-3d').classList.toggle('active', on);
+      applyTilt(on ? tiltDeg : 0);
+      if (on) toast('已开启三维视角，可拖动滑块调整倾斜角');
+    });
+    document.getElementById('tilt-range').addEventListener('input', function (e) {
+      tiltDeg = parseInt(e.target.value, 10) || 0;
+      document.getElementById('tilt-val').textContent = tiltDeg + '°';
+      if (document.getElementById('view3d-toggle').checked) applyTilt(tiltDeg);
+    });
   }
   function syncSwitch(key) {
     var inp = document.querySelector('#overlay-list input[data-key="' + key + '"]');

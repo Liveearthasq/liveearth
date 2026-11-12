@@ -20,6 +20,7 @@
     <div class="actions">
       <button id="btn-search" class="icon-btn" title="搜索城市">🔍</button>
       <button id="btn-locate" class="icon-btn" title="定位我的位置">📍</button>
+      <button id="btn-3d" class="icon-btn" title="三维视角">🌐</button>
       <button id="btn-share" class="icon-btn" title="分享当前视图">🔗</button>
       <button id="btn-refresh" class="icon-btn" title="刷新实时数据">⟳</button>
     </div>
@@ -66,7 +67,20 @@
           <input type="checkbox" id="track-toggle" />
           <span class="track"></span>
         </label>
-        <p class="hint" style="margin-top:8px">提示：也可在地图上「长按」直接收藏该点。收藏会保存在本机浏览器。</p>
+        <p class="hint" style="margin-top:8px">提示：也可在地图上「长按」直接收藏该点并输入标签。收藏会保存在本机浏览器。</p>
+      </div>
+      <div class="group">
+        <h3>三维视角</h3>
+        <label class="switch-line">
+          <span>开启三维倾斜</span>
+          <input type="checkbox" id="view3d-toggle" />
+          <span class="track"></span>
+        </label>
+        <div id="tilt-wrap" class="tilt-wrap hidden">
+          <span class="tilt-label">倾斜角</span>
+          <input type="range" id="tilt-range" min="0" max="60" value="50" />
+          <span id="tilt-val" class="tilt-val">50°</span>
+        </div>
       </div>
       <div class="group auto">
         <label class="switch-line">
@@ -78,6 +92,18 @@
       <p class="hint">数据来自 RainViewer · USGS · Open-Meteo · NASA GIBS，均为免费公开接口，实时性取决于各数据源发布频率。</p>
     </div>
   </section>
+
+  <!-- 标签输入弹窗（给标注添加名称） -->
+  <div id="label-modal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-title">给标注添加标签</div>
+      <input id="label-input" type="text" maxlength="20" placeholder="输入名称，如 家 / 项目点A" autocomplete="off" />
+      <div class="modal-actions">
+        <button id="label-cancel" class="btn-ghost">取消</button>
+        <button id="label-ok" class="btn-primary">确定</button>
+      </div>
+    </div>
+  </div>
 
   <!-- 提示条 -->
   <div id="toast" class="toast"></div>
