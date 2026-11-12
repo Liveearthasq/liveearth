@@ -134,8 +134,20 @@
     { name: '珀斯', en: 'Perth', lat: -31.9505, lng: 115.8605 }
   ];
 
-  // ---------- 地图常驻城市标注（中国中等城市 + 外国大城市）----------
+  // ---------- 地图常驻城市标注（中国中等以上城市 + 外国大城市）----------
   var LABEL_CITIES = [
+    // 中国大城市（一线 / 直辖市 / 特别行政区 / 台湾），major 更突出
+    { name: '北京', lat: 39.90, lng: 116.40, country: 'cn', major: true },
+    { name: '上海', lat: 31.23, lng: 121.47, country: 'cn', major: true },
+    { name: '广州', lat: 23.13, lng: 113.26, country: 'cn', major: true },
+    { name: '深圳', lat: 22.54, lng: 114.06, country: 'cn', major: true },
+    { name: '重庆', lat: 29.56, lng: 106.55, country: 'cn', major: true },
+    { name: '天津', lat: 39.13, lng: 117.20, country: 'cn', major: true },
+    { name: '杭州', lat: 30.27, lng: 120.15, country: 'cn', major: true },
+    { name: '南京', lat: 32.06, lng: 118.80, country: 'cn', major: true },
+    { name: '香港', lat: 22.32, lng: 114.17, country: 'cn', major: true },
+    { name: '澳门', lat: 22.20, lng: 113.54, country: 'cn', major: true },
+    { name: '台北', lat: 25.03, lng: 121.57, country: 'cn', major: true },
     // 中国中等城市
     { name: '苏州', lat: 31.30, lng: 120.62, country: 'cn' },
     { name: '无锡', lat: 31.49, lng: 120.31, country: 'cn' },
@@ -209,7 +221,7 @@
     quakes:    { name: '实时地震',     sub: 'USGS 近 24 小时',          layer: null, load: loadQuakes, on: false },
     aqi:       { name: '空气质量',     sub: 'Open-Meteo AQI',           layer: null, load: loadAQI, on: false },
     nasa:      { name: 'NASA 真彩影像', sub: 'GIBS MODIS 每日真彩',      layer: null, load: loadNASA, on: false },
-    labels:    { name: '城市名称标注',   sub: '中国中等城市 / 外国大城市',  layer: null, load: loadLabels, on: false }
+    labels:    { name: '城市名称标注',   sub: '中国中等以上城市 / 外国大城市',  layer: null, load: loadLabels, on: false }
   };
   var autoTimer = null;
   var myMarker = null;
@@ -374,8 +386,8 @@
     labelMarkers = [];
     LABEL_CITIES.forEach(function (c) {
       var icon = L.divIcon({
-        className: 'city-label ' + (c.country === 'cn' ? 'cn' : 'intl'),
-        html: '<span>' + c.name + '</span>',
+        className: 'city-label ' + (c.country === 'cn' ? 'cn' : 'intl') + (c.major ? ' major' : ''),
+        html: '<span>' + (c.major ? '★ ' : '') + c.name + '</span>',
         iconSize: [0, 0],
         iconAnchor: [0, 0]
       });
@@ -391,10 +403,12 @@
   function updateLabelVisibility() {
     if (!overlays.labels.on) return;
     var z = map.getZoom();
-    var show = z >= 3; // 缩到最小（看全球）时隐藏，避免标签过度重叠
+    // 大城市（major）全球视图即可见；中等城市放大到 z>=3 才显示，避免重叠
     labelMarkers.forEach(function (m) {
       var el = m.getElement ? m.getElement() : null;
-      if (el) el.style.display = show ? '' : 'none';
+      if (!el) return;
+      var major = el.classList.contains('major');
+      el.style.display = (major || z >= 3) ? '' : 'none';
     });
   }
 

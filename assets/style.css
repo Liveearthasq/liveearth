@@ -173,6 +173,12 @@ button{font-family:inherit;cursor:pointer;}
 }
 .city-label.cn span{color:#ffe08a;border:1px solid rgba(255,224,138,.35);}
 .city-label.intl span{color:#bfe3ff;border:1px solid rgba(191,227,255,.3);}
+/* 国内大城市（一线/直辖市等）更突出：更大、更粗、加底色 */
+.city-label.cn.major span{
+  font-size:13px;font-weight:800;color:#fff;
+  background:rgba(202,138,4,.78);border:1px solid rgba(255,224,138,.85);
+  box-shadow:0 0 6px rgba(255,200,80,.6);letter-spacing:.5px;
+}
 
 /* 缩放控件：上移 20px（margin-bottom 由默认 10px 增至 30px） */
 .leaflet-control-zoom{margin-bottom:30px!important;border:none!important;box-shadow:0 2px 10px rgba(0,0,0,.45);}
