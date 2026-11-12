@@ -22,28 +22,36 @@ python -m http.server 8080
 # 浏览器打开 http://127.0.0.1:8080
 ```
 
-## 部署到 Vercel（一键）
-本项目是纯静态站点，Vercel 无需构建，直接托管根目录即可。
+## 部署（任选其一，本项目是纯静态站点，零构建）
 
-### 方式一：用 Vercel 命令行（推荐，最简单）
+### 方式一：GitHub Pages（推荐 · 无需安装任何工具）
+代码已在 GitHub 仓库，几步即可上线，免费、自带域名：
+1. 打开 `https://github.com/Liveearthasq/liveearth` → **Settings → Pages**
+2. **Source** 选 `Deploy from a branch` → **Branch** 选 `main`、**folder** 选 `/ (root)`
+3. 点 **Save**
+4. 约 1 分钟后访问 `https://Liveearthasq.github.io/liveearth/`
+
+> 仓库已含 `.nojekyll`，GitHub Pages 会按纯静态文件原样托管，无需 Jekyll。
+
+### 方式二：Netlify Drop（无需安装 · 拖拽即上线）
+1. 打开 `https://app.netlify.com/drop`
+2. 把本仓库下载到本地的整个文件夹拖进去
+3. 自动生成 `https://xxxx.netlify.app` 地址，可随时改自定义域名
+
+### 方式三：Vercel（需在本机安装 Vercel CLI 或登录 Vercel 账号）
 ```bash
 npx vercel        # 首次会打开浏览器让你登录，按提示完成
 npx vercel --prod # 部署到生产环境，返回线上地址
 ```
-
-### 方式二：用 Token 非交互部署（CI / 助手代部署）
-在 https://vercel.com/account/tokens 生成一个 Token，然后：
+或用 Token 非交互部署（CI / 助手代部署）：
 ```bash
 VERCEL_TOKEN=你的token npx vercel deploy --prod --token=$VERCEL_TOKEN
 ```
-
-### 方式三：GitHub + Deploy 按钮
-1. 把本目录推到 GitHub 仓库（如 `your-name/liveearth`）
-2. 点击下面按钮，按引导导入并部署
+也可点下面按钮按引导导入（需 Vercel 账号）：
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FLiveearthasq%2Fliveearth&project-name=liveearth&root-directory=.)
 
-> 提示：上面按钮已指向 `github.com/Liveearthasq/liveearth`，请先把这个仓库推到你的 GitHub 同名仓库，再点按钮导入部署。
+> 提示：上面按钮已指向 `github.com/Liveearthasq/liveearth`。
 
 ## 目录结构
 ```
