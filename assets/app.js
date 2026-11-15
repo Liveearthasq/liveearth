@@ -734,6 +734,13 @@
     var active = [];
     Object.keys(overlays).forEach(function (k) { if (overlays[k].on) active.push(k); });
     var qs = 'base=' + currentBase + '&layers=' + active.join(',');
+    // 把收藏点编码进分享链接，便于跨设备同步（紧凑字段，缩短长度）
+    if (favorites && favorites.length) {
+      var favParam = favorites.map(function (f) {
+        return { id: f.id, n: f.name, la: +f.lat.toFixed(5), lo: +f.lng.toFixed(5) };
+      });
+      qs += '&fav=' + encodeURIComponent(JSON.stringify(favParam));
+    }
     var hash = '#c=' + c.lat.toFixed(5) + ',' + c.lng.toFixed(5) + ',' + z;
     var url = location.origin + location.pathname + '?' + qs + hash;
     var done = false;
@@ -765,11 +772,45 @@
           }
         });
       }
+      // 导入分享链接携带的收藏点（合并去重，不覆盖本机已有）
+      var favRaw = qs.get('fav');
+      if (favRaw) {
+        try {
+          var favs = JSON.parse(decodeURIComponent(favRaw));
+          importFavorites(favs);
+        } catch (e) {}
+      }
       var m = hash.match(/c=([-\d.]+),([-\d.]+),(\d+(\.\d+)?)/);
       if (m) {
         map.setView([parseFloat(m[1]), parseFloat(m[2])], parseFloat(m[3]));
       }
     } catch (e) {}
+  }
+  function importFavorites(incoming) {
+    if (!Array.isArray(incoming) || !incoming.length) return;
+    var added = 0;
+    incoming.forEach(function (f) {
+      if (!f || f.la == null || f.lo == null) return;
+      var lat = +f.la, lng = +f.lo;
+      var dup = favorites.some(function (x) {
+        return (f.id && x.id === f.id) ||
+               (Math.abs(x.lat - lat) < 0.0005 && Math.abs(x.lng - lng) < 0.0005);
+      });
+      if (dup) return;
+      favorites.push({
+        id: f.id || (Date.now() + '_' + Math.floor(Math.random() * 1000) + '_' + added),
+        name: (f.n != null ? String(f.n) : '标注'),
+        lat: lat,
+        lng: lng
+      });
+      added++;
+    });
+    if (added) {
+      saveFavorites();
+      renderFavorites();
+      drawFav();
+      toast('已从分享链接导入 ' + added + ' 个收藏点');
+    }
   }
 
   // ---------- UI 构建 ----------
