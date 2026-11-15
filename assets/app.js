@@ -413,18 +413,27 @@
     });
   }
 
-  // ---------- 中国行政边界（DataV 省级 GeoJSON）----------
+  // ---------- 中国行政边界（内嵌本地副本 + DataV 在线兜底）----------
   function loadAdmin() {
-    return fetch('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json')
+    var local = './assets/admin/100000_full.json';
+    var remote = 'https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json';
+    function parse(geo) {
+      var layer = L.geoJSON(geo, {
+        style: { color: '#7dd3fc', weight: 1, opacity: 0.85, fill: false },
+        interactive: false,
+        className: 'admin-bounds'
+      });
+      if (layer.setZIndex) layer.setZIndex(450);
+      return layer;
+    }
+    // 优先从同源加载内嵌副本，避免手机网络对 DataV 外链的依赖
+    return fetch(local)
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-      .then(function (geo) {
-        var layer = L.geoJSON(geo, {
-          style: { color: '#7dd3fc', weight: 1, opacity: 0.85, fill: false },
-          interactive: false,
-          className: 'admin-bounds'
-        });
-        if (layer.setZIndex) layer.setZIndex(450);
-        return layer;
+      .then(parse)
+      .catch(function () {
+        return fetch(remote)
+          .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+          .then(parse);
       });
   }
 
@@ -444,7 +453,12 @@
       }).catch(function (e) {
         o.on = false;
         syncSwitch(key);
-        toast('「' + o.name + '」加载失败：' + (e && e.message ? e.message : '数据源不可用'));
+        var msg = (e && e.message) ? e.message : '';
+        if (/Failed to fetch|NetworkError|net|timeout|Load failed|TypeError/i.test(msg)) {
+          toast('「' + o.name + '」加载失败：网络或数据源不可达，建议切换 WiFi 后重试');
+        } else {
+          toast('「' + o.name + '」加载失败：' + (msg || '数据源不可用'));
+        }
       });
     } else {
       if (o.layer) map.removeLayer(o.layer);
@@ -463,7 +477,7 @@
           if (layer.setZIndex) layer.setZIndex(500);
           layer.addTo(map);
         }).catch(function () {
-          toast('「' + overlays[key].name + '」刷新失败');
+          toast('「' + overlays[key].name + '」刷新失败：网络或数据源不可达');
         }));
       }
     });
