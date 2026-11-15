@@ -33,7 +33,9 @@ python -m http.server 8080
 1. 打开 `https://github.com/Liveearthasq/liveearth` → **Settings → Pages**
 2. **Source** 选 `Deploy from a branch` → **Branch** 选 `main`、**folder** 选 `/ (root)`
 3. 点 **Save**
-4. 约 1 分钟后访问 `https://Liveearthasq.github.io/liveearth/`
+4. 约 1 分钟后访问 `https://liveearthasq.github.io/liveearth/`
+
+> 排错：若保存后访问仍是 **"Site not found"**，说明首次构建没被触发。回到 Pages 设置重新点一次 **Save**，或往 `main` 再推一个提交即可触发构建。
 
 > 仓库已含 `.nojekyll`，GitHub Pages 会按纯静态文件原样托管，无需 Jekyll。
 
