@@ -222,7 +222,8 @@
     aqi:       { name: '空气质量',     sub: 'Open-Meteo AQI',           layer: null, load: loadAQI, on: false },
     nasa:      { name: 'NASA 真彩影像', sub: 'GIBS MODIS 每日真彩',      layer: null, load: loadNASA, on: false },
     admin:     { name: '中国行政边界',   sub: '省级行政区划（DataV）',      layer: null, load: loadAdmin, on: false },
-    labels:    { name: '城市名称标注',   sub: '中国中等以上城市 / 外国大城市',  layer: null, load: loadLabels, on: false }
+    labels:    { name: '城市名称标注',   sub: '中国中等以上城市 / 外国大城市',  layer: null, load: loadLabels, on: false },
+    customers: { name: '客户标注（共享）', sub: '团队共享的客户位置与名称',   layer: null, load: loadCustomers, on: false }
   };
   var autoTimer = null;
   var myMarker = null;
@@ -434,6 +435,31 @@
         return fetch(remote)
           .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
           .then(parse);
+      });
+  }
+
+  // ---------- 客户标注（共享，同源 JSON）----------
+  function loadCustomers() {
+    var grp = L.layerGroup();
+    return fetch('./assets/shared-markers.json')
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (data) {
+        var list = (data && data.markers) || [];
+        list.forEach(function (m) {
+          if (m.lat == null || m.lng == null) return;
+          var icon = L.divIcon({
+            className: 'cust-pin',
+            html: '<span class="pin">📍</span><span class="nm">' + escapeHtml(m.name || '客户') + '</span>',
+            iconSize: [0, 0], iconAnchor: [0, 0]
+          });
+          var marker = L.marker([+m.lat, +m.lng], { icon: icon });
+          var pop = '<div class="pop"><b>' + escapeHtml(m.name || '客户') + '</b>' +
+            (m.note ? '<br>' + escapeHtml(m.note) : '') +
+            '<br>' + (+m.lat).toFixed(4) + ', ' + (+m.lng).toFixed(4) + '</div>';
+          marker.bindPopup(pop);
+          grp.addLayer(marker);
+        });
+        return grp;
       });
   }
 
